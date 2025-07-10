@@ -1,0 +1,134 @@
+{% extends 'shared/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .product-card {
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e0e0e0;
+    border-radius: .5rem;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+
+  .product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .product-card-body {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+  }
+
+  .product-description {
+    flex-grow: 1;
+    color: #555;
+    font-size: 0.9rem;
+    margin-bottom: .5rem;
+  }
+
+  .product-price {
+    font-weight: bold;
+    color: #d9534f;
+  }
+
+  .offcanvas {
+    transition: transform 0.2s ease-in-out;  /* mais lento e suave */
+  }
+</style>
+
+{% if produtos %}
+  {% for categoria_slug, categoria_nome in categorias %}
+    <div class="container my-4">
+      <h1 class="text-left mb-4">{{ categoria_nome }}</h1>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for produto in produtos %}
+          {% if produto.categoria == categoria_slug %}
+            <div class="col">
+              <a href="#" class="product-card"
+                 data-bs-toggle="offcanvas" data-bs-target="#productDetails"
+                 onclick="showProductDetails(
+                   '{{ produto.nome|escapejs }}', 
+                   '{{ produto.descricao|escapejs }}', 
+                   '{{ produto.preco }}', 
+                   '{% if produto.imagem %}{{ produto.imagem.url }}{% else %}{% static 'img/sem-imagem.png' %}{% endif %}', 
+                   '{{ produto.id }}'
+                 )">
+                {% if produto.imagem %}
+                  <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                {% else %}
+                  <img src="{% static 'img/sem-imagem.png' %}" alt="Sem imagem">
+                {% endif %}
+                <div class="product-card-body">
+                  <div class="product-title">{{ produto.nome|slice:":30" }}</div>
+                  <div class="product-description">{{ produto.descricao|slice:":100" }}</div>
+                  <div class="product-price">R$ {{ produto.preco }}</div>
+                </div>
+              </a>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-center">Nenhum produto disponível no momento.</p>
+{% endif %}
+
+<!-- Modal lateral para produtos quaisquer (offcanvas) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="productDetails" aria-labelledby="productDetailsLabel">
+  <div class="offcanvas-header">
+    <h2 class="offcanvas-title" id="productDetailsLabel">Detalhes do Produto</h2>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+  <div class="offcanvas-body">
+    <img id="modalImage" src="" alt="" class="img-fluid mb-3 rounded-3">
+    <h2 id="modalTitle"></h2>
+    <p id="modalDescription"></p>
+    <p class="fw-bold">Preço: R$ <span id="modalPrice"></span></p>
+    
+    <form id="orderForm" method="post" action="/comprar/">
+      {% csrf_token %}
+      <input type="hidden" id="produtoIdInput" name="produto_id" value="">
+
+      <div class="mb-3">
+        <label for="observacao" class="form-label">Observação do cliente</label>
+        <textarea class="form-control" id="observacao" name="observacao" rows="3" placeholder="Ex: Sem cebola, borda recheada, etc"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-danger w-100">Comprar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Script para preencher os dados do modal -->
+<script>
+function showProductDetails(nome, descricao, preco, imagemUrl, produtoId) {
+    document.getElementById('modalTitle').textContent = nome;
+    document.getElementById('modalDescription').textContent = descricao;
+    document.getElementById('modalPrice').textContent = preco;
+    document.getElementById('modalImage').src = imagemUrl;
+    document.getElementById('produtoIdInput').value = produtoId;
+}
+</script>
+
+{% endblock %}
