@@ -2,7 +2,20 @@
 {% load static %}
 
 {% block content %}
+
 <style>
+  /* Remove as setas do input number no Chrome, Safari, Edge, Opera */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Remove as setas do input number no Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+  /* Cards dos produtos na vitrine */
   .product-card {
     height: 100%;
     text-decoration: none;
@@ -52,8 +65,55 @@
   }
 
   .offcanvas {
-    transition: transform 0.2s ease-in-out;  /* mais lento e suave */
+    transition: transform 0.2s ease-in-out;
   }
+
+  /* Estilo das opções de sabor e borda no estilo lista clean */
+  .option-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .6rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .option-info {
+    flex: 1;
+  }
+
+  .option-name {
+    font-weight: 500;
+    font-size: 1rem;
+  }
+
+  .option-description {
+    color: #777;
+    font-size: 0.85rem;
+  }
+
+  .option-price {
+    color: #000;
+    font-size: 0.9rem;
+  }
+
+  .form-check-input {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  transition: all 0.2s;
+}
+
+.form-check-input:checked {
+  background-color: #d9534f; /* cor vermelha para combinar com seu tema */
+  border-color: #d9534f;
+}
+
+.form-check-input:focus {
+  box-shadow: none;
+  border-color: #aaa;
+}
 </style>
 
 {% if produtos %}
@@ -64,26 +124,33 @@
         {% for produto in produtos %}
           {% if produto.categoria == categoria_slug %}
             <div class="col">
-              <a href="#" class="product-card"
-                 data-bs-toggle="offcanvas" data-bs-target="#productDetails"
-                 onclick="showProductDetails(
-                   '{{ produto.nome|escapejs }}', 
-                   '{{ produto.descricao|escapejs }}', 
-                   '{{ produto.preco }}', 
-                   '{% if produto.imagem %}{{ produto.imagem.url }}{% else %}{% static 'img/sem-imagem.png' %}{% endif %}', 
-                   '{{ produto.id }}'
-                 )">
-                {% if produto.imagem %}
-                  <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
-                {% else %}
-                  <img src="{% static 'img/sem-imagem.png' %}" alt="Sem imagem">
-                {% endif %}
-                <div class="product-card-body">
-                  <div class="product-title">{{ produto.nome|slice:":30" }}</div>
-                  <div class="product-description">{{ produto.descricao|slice:":100" }}</div>
-                  <div class="product-price">R$ {{ produto.preco }}</div>
-                </div>
-              </a>
+              {% if produto.categoria == 'pizza' %}
+                <a href="#" class="product-card"
+                   data-bs-toggle="offcanvas" data-bs-target="#pizzaDetails"
+                   onclick="carregarPizzaDetail({{ produto.id }})">
+              {% else %}
+                <a href="#" class="product-card"
+                   data-bs-toggle="offcanvas" data-bs-target="#productDetails"
+                   onclick="showProductDetails(
+                     '{{ produto.nome|escapejs }}',
+                     '{{ produto.descricao|escapejs }}',
+                     '{{ produto.preco }}',
+                     '{% if produto.imagem %}{{ produto.imagem.url }}{% else %}{% static 'img/sem-imagem.png' %}{% endif %}',
+                     '{{ produto.id }}'
+                   )">
+              {% endif %}
+
+                  {% if produto.imagem %}
+                    <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}">
+                  {% else %}
+                    <img src="{% static 'img/sem-imagem.png' %}" alt="Sem imagem">
+                  {% endif %}
+                  <div class="product-card-body">
+                    <div class="product-title">{{ produto.nome|slice:":30" }}</div>
+                    <div class="product-description">{{ produto.descricao|slice:":100" }}</div>
+                    <div class="product-price">R$ {{ produto.preco }}</div>
+                  </div>
+                </a>
             </div>
           {% endif %}
         {% endfor %}
@@ -94,10 +161,10 @@
   <p class="text-center">Nenhum produto disponível no momento.</p>
 {% endif %}
 
-<!-- Modal lateral para produtos quaisquer (offcanvas) -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="productDetails" aria-labelledby="productDetailsLabel">
+<!-- Offcanvas para produto comum -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="productDetails">
   <div class="offcanvas-header">
-    <h2 class="offcanvas-title" id="productDetailsLabel">Detalhes do Produto</h2>
+    <h2 class="offcanvas-title">Detalhes do Produto</h2>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
   </div>
   <div class="offcanvas-body">
@@ -105,30 +172,183 @@
     <h2 id="modalTitle"></h2>
     <p id="modalDescription"></p>
     <p class="fw-bold">Preço: R$ <span id="modalPrice"></span></p>
-    
-    <form id="orderForm" method="post" action="/comprar/">
+    <form method="post" action="/comprar/">
       {% csrf_token %}
-      <input type="hidden" id="produtoIdInput" name="produto_id" value="">
-
+      <input type="hidden" id="produtoIdInput" name="produto_id">
       <div class="mb-3">
-        <label for="observacao" class="form-label">Observação do cliente</label>
-        <textarea class="form-control" id="observacao" name="observacao" rows="3" placeholder="Ex: Sem cebola, borda recheada, etc"></textarea>
+        <label class="form-label">Observação do cliente</label>
+        <textarea class="form-control" name="observacao" rows="3" placeholder="Ex: Sem cebola, borda recheada, etc"></textarea>
       </div>
-
       <button type="submit" class="btn btn-danger w-100">Comprar</button>
     </form>
   </div>
 </div>
 
-<!-- Script para preencher os dados do modal -->
+<!-- Offcanvas da pizza -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="pizzaDetails">
+  <div class="offcanvas-header">
+    <h2 class="offcanvas-title">Detalhes da Pizza</h2>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <img id="pizzaModalImage" src="" alt="" class="img-fluid mb-3 rounded-3">
+    <h2 id="pizzaModalTitle"></h2>
+    <p id="pizzaModalDescription"></p>
+    <p class="fw-bold">Preço Base: R$ <span id="pizzaModalPrice"></span></p>
+
+    <form method="post" action="/comprar/">
+      {% csrf_token %}
+      <input type="hidden" id="pizzaProdutoIdInput" name="produto_id">
+      <input type="hidden" id="saboresSelecionadosInput" name="sabores_selecionados">
+      <input type="hidden" id="bordaSelecionadaInput" name="borda_selecionada">
+
+      <div class="mb-3">
+        <label class="form-label">Escolha até <span id="pizzaModalMaxSabores"></span> sabores</label>
+        <div id="saboresOptions"></div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Escolha uma borda (opcional)</label>
+        <div id="bordasOptions"></div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Observação do cliente</label>
+        <textarea class="form-control" name="observacao"></textarea>
+      </div>
+
+      <div class="mb-3 d-flex align-items-center justify-content-between">
+        <label class="form-label mb-0">Quantidade</label>
+        <div class="input-group" style="width: 120px;">
+          <button type="button" class="btn btn-outline-danger" id="btnMenos">-</button>
+          <input type="number" class="form-control text-center" id="quantidadeInput" name="quantidade" value="1" min="1">
+          <button type="button" class="btn btn-outline-danger" id="btnMais">+</button>
+        </div>
+      </div>
+
+      <p class="fw-bold">Preço Final: R$ <span id="pizzaPreco"></span></p>
+      <button type="submit" class="btn btn-danger w-100">Adicionar ao carrinho</button>
+    </form>
+  </div>
+</div>
+
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <script>
-function showProductDetails(nome, descricao, preco, imagemUrl, produtoId) {
-    document.getElementById('modalTitle').textContent = nome;
-    document.getElementById('modalDescription').textContent = descricao;
-    document.getElementById('modalPrice').textContent = preco;
-    document.getElementById('modalImage').src = imagemUrl;
-    document.getElementById('produtoIdInput').value = produtoId;
+let precoBaseGlobal = 0;
+
+function atualizarPrecoFinal() {
+  let total = precoBaseGlobal;
+
+  // Somar extras de sabores selecionados
+  document.querySelectorAll('.sabor-checkbox:checked').forEach(cb => {
+    total += parseFloat(cb.getAttribute('data-preco-extra') || "0");
+  });
+
+  // Somar extra da borda selecionada
+  const borda = document.querySelector('.borda-radio:checked');
+  if (borda) {
+    total += parseFloat(borda.getAttribute('data-preco-extra') || "0");
+  }
+
+  // Multiplicar pela quantidade
+  const quantidade = parseInt(document.getElementById('quantidadeInput').value) || 1;
+  total *= quantidade;
+
+  document.getElementById('pizzaPreco').textContent = total.toFixed(2);
 }
+
+// Botões + e -
+function alterarQuantidade(delta) {
+  const input = document.getElementById('quantidadeInput');
+  let valor = parseInt(input.value) || 1;
+  valor += delta;
+  if (valor < 1) valor = 1;
+  input.value = valor;
+  atualizarPrecoFinal();
+}
+
+// Carregar dados da pizza
+function carregarPizzaDetail(produtoId) {
+  fetch(`/produto/${produtoId}/json/`)
+    .then(res => res.json())
+    .then(data => {
+      precoBaseGlobal = parseFloat(data.preco);
+
+      document.getElementById('pizzaModalTitle').textContent = data.nome;
+      document.getElementById('pizzaModalDescription').textContent = data.descricao;
+      document.getElementById('pizzaModalPrice').textContent = data.preco;
+      document.getElementById('pizzaModalImage').src = data.imagem_url;
+      document.getElementById('pizzaModalMaxSabores').textContent = data.max_sabores;
+      document.getElementById('pizzaProdutoIdInput').value = produtoId;
+
+      // Renderizar sabores
+      let saboresHTML = '';
+      data.sabores.forEach(sabor => {
+        saboresHTML += `
+          <div class="option-item">
+            <div class="option-info">
+              <div class="option-name">${sabor.nome}</div>
+              ${sabor.descricao ? `<div class="option-description">${sabor.descricao}</div>` : ''}
+              <div class="option-price">+R$ ${sabor.preco_extra || '0.00'}</div>
+            </div>
+            <div>
+              <input type="checkbox" class="form-check-input sabor-checkbox"
+                data-preco-extra="${sabor.preco_extra || '0.00'}" value="${sabor.id}">
+            </div>
+          </div>`;
+      });
+      document.getElementById('saboresOptions').innerHTML = saboresHTML;
+
+      // Renderizar bordas
+      let bordasHTML = '';
+      (data.bordas || []).forEach(borda => {
+        bordasHTML += `
+          <div class="option-item">
+            <div class="option-info">
+              <div class="option-name">${borda.nome}</div>
+              <div class="option-price">+R$ ${borda.preco_extra || '0.00'}</div>
+            </div>
+            <div>
+              <input type="radio" name="borda" class="form-check-input borda-radio"
+                data-preco-extra="${borda.preco_extra || '0.00'}" value="${borda.id}">
+            </div>
+          </div>`;
+      });
+      document.getElementById('bordasOptions').innerHTML = bordasHTML;
+
+      // Listeners
+      const maxSabores = data.max_sabores;
+      document.querySelectorAll('.sabor-checkbox').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const selecionados = document.querySelectorAll('.sabor-checkbox:checked');
+          if (selecionados.length > maxSabores) {
+            cb.checked = false;
+            alert(`Máximo ${maxSabores} sabor(es).`);
+          }
+          atualizarPrecoFinal();
+        });
+      });
+      document.querySelectorAll('.borda-radio').forEach(rb => {
+        rb.addEventListener('change', atualizarPrecoFinal);
+      });
+
+      // Listener quantidade
+      document.getElementById('quantidadeInput').addEventListener('input', atualizarPrecoFinal);
+      document.getElementById('btnMais').onclick = () => alterarQuantidade(1);
+      document.getElementById('btnMenos').onclick = () => alterarQuantidade(-1);
+
+      // Reset quantidade para 1 sempre que abrir
+      document.getElementById('quantidadeInput').value = 1;
+
+      atualizarPrecoFinal();
+    });
+}
+
+// Submeter: copiar ids de sabores e borda
+document.querySelector('#pizzaDetails form').addEventListener('submit', e => {
+  const sabores = Array.from(document.querySelectorAll('.sabor-checkbox:checked')).map(cb => cb.value);
+  document.getElementById('saboresSelecionadosInput').value = sabores.join(',');
+  const borda = document.querySelector('.borda-radio:checked');
+  document.getElementById('bordaSelecionadaInput').value = borda ? borda.value : '';
+});
 </script>
 
 {% endblock %}

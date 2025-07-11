@@ -14,6 +14,7 @@
   <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
 
   <!-- Fonts -->
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
@@ -77,7 +78,12 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted" href="index.html#book-a-table">Fazer Pedido</a>
+      <a class="btn-getstarted position-relative d-flex align-items-center" href="#" 
+        data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+        <i class="bi bi-bag fs-5"></i>
+        <span id="cartSubtotal" class="ms-2">R$ 0,00</span>
+      </a>
+                        
 
     </div>
   </header>
@@ -159,12 +165,74 @@
   <!-- Preloader -->
   <div id="preloader"></div>
 
+<!-- Offcanvas da sacola -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
+  <div class="offcanvas-header">
+    <h1 class="offcanvas-title">Sua sacola (<span id="cartItemCount">0</span>)</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column justify-content-between">
+    <div>
+      <!-- Endereço de entrega -->
+      <div class="card mb-3">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <div class="bg-light rounded-circle p-2 me-3">
+              <i class="bi bi-geo-alt-fill text-success"></i>
+            </div>
+            <span id="deliveryAddress">Selecione um endereço de entrega</span>
+          </div>
+          <i class="bi bi-chevron-right"></i>
+        </div>
+      </div>
+
+      <!-- Aplicar benefício -->
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="fw-semibold mb-2">Aplicar benefício</div>
+          <div class="d-flex align-items-center bg-light rounded p-2">
+            <i class="bi bi-gift me-2 text-secondary"></i>
+            <span id="benefitLabel" class="text-secondary">Aplique um benefício</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Valores -->
+      <div class="card">
+        <div class="card-body">
+          <div class="fw-semibold mb-2">Valores</div>
+          <div class="d-flex justify-content-between mb-1">
+            <span>Subtotal</span>
+            <span id="cartSubtotal">R$ 0,00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span>Taxa de entrega</span>
+            <span id="deliveryFee">Grátis</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between fw-bold">
+            <span>Total</span>
+            <span id="cartTotal">R$ 0,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão no rodapé -->
+    <div class="p-3">
+      <button class="btn btn-success w-100 rounded-pill">Finalizar compra</button>
+    </div>
+  </div>
+</div>
+
+
 <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
 <script src="{% static 'vendor/aos/aos.js' %}"></script>
 <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
 <script src="{% static 'vendor/purecounter/purecounter_vanilla.js' %}"></script>
 <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+
 
 <!-- Main JS File -->
 <script src="{% static 'js/scripts.js' %}"></script>

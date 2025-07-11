@@ -87,6 +87,10 @@ h6 {
   font-family: var(--heading-font);
 }
 
+.btn-getstarted .badge {
+  padding: 0.2em 0.4em;
+}
+
 /* Pulsating Play Button
 ------------------------------*/
 .pulsating-play-btn {

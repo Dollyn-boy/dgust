@@ -18,16 +18,9 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome
 
-
-class Tamanho(models.Model):
-    nome = models.CharField(max_length=50)  # Ex: Pequena, Média, Grande
-    max_sabores = models.PositiveIntegerField(default=1)
-
-    def __str__(self):
-        return self.nome
-
 class Sabor(models.Model):
     nome = models.CharField(max_length=100)
+    preco_extra = models.DecimalField(max_digits=5, decimal_places=2, default=0) 
     descricao = models.TextField(blank=True)
 
     def __str__(self):
@@ -41,6 +34,6 @@ class Borda(models.Model):
         return self.nome
 
 class Pizza(Produto):
-    tamanhos_disponiveis = models.ManyToManyField(Tamanho)
+    max_sabores = models.PositiveIntegerField(default=1)
     sabores_disponiveis = models.ManyToManyField(Sabor)
     bordas_disponiveis = models.ManyToManyField(Borda, blank=True)

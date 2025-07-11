@@ -6,8 +6,10 @@
 * License: https://bootstrapmade.com/license/
 */
 
+
 (function() {
   "use strict";
+  
 
   /**
    * Apply .scrolled class to the body as the page is scrolled down

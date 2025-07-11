@@ -15,17 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from core.views import home
-from Produtos.views import listar_produto, detalhes_produto
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
-    path('produto/', listar_produto, name='cardapio_completo'), # TODO Criar uma view específica para o cardápio.
-    path('produto/<int:produto_id>/', detalhes_produto, name='detalhes_produto'),
+    path('produto/', include('Produtos.urls'))
 ]
 
 if settings.DEBUG:
