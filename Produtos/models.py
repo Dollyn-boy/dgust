@@ -6,6 +6,7 @@ class Produto(models.Model):
         ('pizza', 'Pizza'),
         ('bebida', 'Bebida'),
         ('sobremesa', 'Sobremesa'),
+        ('petisco', 'Petisco')
         # adicione mais conforme necessário
     ]
 

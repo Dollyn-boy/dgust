@@ -14,7 +14,7 @@
   <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
 
   <!-- Fonts -->
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
@@ -28,7 +28,30 @@
 
   <!-- Main CSS File -->
   <link href="{% static 'css/main.css' %}" rel="stylesheet">
+  <style>
+    .offcanvas {
+      transition: transform 0.2s ease-in-out;
+    }
 
+    .item-card {
+      border: 1px solid #e0e0e0;
+      border-radius: .75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .pedido-header {
+      font-weight: 500;
+      font-size: 1.1rem;
+    }
+    .delete-btn {
+      color: #dc3545;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      color: #a71d2a;
+    }
+  </style>
   <!-- =======================================================
   * Template Name: Yummy
   * Template URL: https://bootstrapmade.com/yummy-bootstrap-restaurant-website-template/
@@ -98,67 +121,55 @@
 
   <footer id="footer" class="footer dark-background">
 
-    <div class="container">
-      <div class="row gy-3">
-        <div class="col-lg-3 col-md-6 d-flex">
-          <i class="bi bi-geo-alt icon"></i>
-          <div class="address">
-            <h4>Endereço</h4>
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
-            <p></p>
-          </div>
-
+  <div class="container">
+    <div class="row gy-3">
+      <div class="col-lg-3 col-md-6 d-flex">
+        <i class="bi bi-geo-alt icon"></i>
+        <div class="address">
+          <h4>Endereço</h4>
+          <p>Rua Exemplo, 123</p>
+          <p>Riachão do Jacuípe - BA, 44640-000</p>
         </div>
+      </div>
 
-        <div class="col-lg-3 col-md-6 d-flex">
-          <i class="bi bi-telephone icon"></i>
-          <div>
-            <h4>Contato</h4>
-            <p>
-              <strong>Phone:</strong> <span>+1 5589 55488 55</span><br>
-              <strong>Email:</strong> <span>info@example.com</span><br>
-            </p>
-          </div>
+      <div class="col-lg-3 col-md-6 d-flex">
+        <i class="bi bi-telephone icon"></i>
+        <div>
+          <h4>Contato</h4>
+          <p>
+            <strong>Telefone:</strong> <span>(75) 99999-9999</span><br>
+            <strong>Email:</strong> <span>contato@dgustpizzaria.com.br</span><br>
+          </p>
         </div>
+      </div>
 
-        <div class="col-lg-3 col-md-6 d-flex">
-          <i class="bi bi-clock icon"></i>
-          <div>
-            <h4>Opening Hours</h4>
-            <p>
-              <strong>Mon-Sat:</strong> <span>11AM - 23PM</span><br>
-              <strong>Sunday</strong>: <span>Closed</span>
-            </p>
-          </div>
+      <div class="col-lg-3 col-md-6 d-flex">
+        <i class="bi bi-clock icon"></i>
+        <div>
+          <h4>Horário de Funcionamento</h4>
+          <p>
+            <strong>Seg-Sáb:</strong> <span>17h - 23h</span><br>
+            <strong>Domingo:</strong> <span>Fechado</span>
+          </p>
         </div>
+      </div>
 
-        <div class="col-lg-3 col-md-6">
-          <h4>Follow Us</h4>
-          <div class="social-links d-flex">
-            <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
-            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-          </div>
+      <div class="col-lg-3 col-md-6">
+        <h4>Redes Sociais</h4>
+        <div class="social-links d-flex">
+          <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="whatsapp"><i class="bi bi-whatsapp"></i></a>
         </div>
-
       </div>
     </div>
+  </div>
 
-    <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">Yummy</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-      </div>
-    </div>
+  <div class="container copyright text-center mt-4">
+    <p>© <span>Copyright</span> <strong class="px-1 sitename">D'Gust</strong> <span>Todos os direitos reservados</span></p>
+  </div>
 
-  </footer>
-
+</footer>
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
@@ -197,6 +208,10 @@
         </div>
       </div>
 
+      <div class="item-card d-flex justify-content-between align-items-center">
+        <div id="itensOptions"></div>
+      </div>
+      
       <!-- Valores -->
       <div class="card">
         <div class="card-body">
@@ -220,7 +235,7 @@
 
     <!-- Botão no rodapé -->
     <div class="p-3">
-      <button class="btn btn-success w-100 rounded-pill">Finalizar compra</button>
+      <button class="btn btn-danger center w-100 rounded-pill">Finalizar compra</button>
     </div>
   </div>
 </div>
@@ -236,6 +251,102 @@
 
 <!-- Main JS File -->
 <script src="{% static 'js/scripts.js' %}"></script>
+<script>
+function atualizarCarrinho() {
+  fetch('/carrinho/json')
+    .then(res => res.json())
+    .then(data => {
+      let itensHTML = '';
+
+      data.itens.forEach(item => {
+        let saboresHTML = '';
+        if (item.sabores.length > 0) {
+          saboresHTML = '<div class="text-muted small">Sabores: ' 
+            + item.sabores.map(s => s.nome).join(', ') 
+            + '</div>';
+        }
+
+        let bordaHTML = '';
+        if (item.borda) {
+          bordaHTML = `<div class="text-muted small">Borda: ${item.borda.nome} (+R$ ${item.borda.preco_extra.toFixed(2)})</div>`;
+        }
+
+        let obsHTML = '';
+        if (item.observacao) {
+          obsHTML = `<div class="text-muted small">Obs: ${item.observacao}</div>`;
+        }
+
+        itensHTML += `
+          <div class="pedido-card mb-2 p-2 border rounded d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold">${item.produto_nome}</div>
+              <div>Qtd: ${item.quantidade} | Unitário: R$ ${item.preco_unitario.toFixed(2)} | Total: R$ ${item.preco_total.toFixed(2)}</div>
+              ${saboresHTML}
+              ${bordaHTML}
+              ${obsHTML}
+            </div>
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="deletarItemCarrinho(${item.id})">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        `;
+      });
+
+      document.getElementById('itensOptions').innerHTML = itensHTML;
+
+      // Atualiza valores
+      document.getElementById('cartSubtotal').innerText = 'R$ ' + data.valor_total.toFixed(2);
+      document.getElementById('cartTotal').innerText = 'R$ ' + data.valor_total.toFixed(2);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+// Executa a função toda vez que o offcanvas for aberto
+document.addEventListener('DOMContentLoaded', function() {
+  var offcanvas = document.getElementById('cartOffcanvas');
+  offcanvas.addEventListener('show.bs.offcanvas', atualizarCarrinho);
+});
+
+function deletarItemCarrinho(itemId) {
+  fetch(`/carrinho/deletar/${itemId}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'Content-Type': 'application/json'
+    },
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error('Erro ao deletar item');
+    }
+    return res.json();
+  })
+  .then(data => {
+    atualizarCarrinho(); // atualiza carrinho após exclusão
+  })
+  .catch(error => {
+    console.error(error);
+  });
+}
+
+// Função auxiliar para pegar CSRF token
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+</script>
 
 </body>
 

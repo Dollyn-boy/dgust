@@ -16,14 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import home
+from core.views import listar_produto, detalhes_pizza_json, detalhes_produto_json, comprar, detalhes_carrinho_json, deletar_item_carrinho
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home),
-    path('produto/', include('Produtos.urls'))
+    path('', listar_produto, name='listar_produtos'),
+    path('pizza/<int:pizza_id>/json/', detalhes_pizza_json, name='detalhes_pizza_json'),
+    path('produto/<int:product_id>/json/', detalhes_produto_json, name='detalhes_produto_json'),
+    path('comprar/', comprar, name='comprar'),
+    path('carrinho/json', detalhes_carrinho_json, name='detalhes_carrinho_json' ),
+    path('carrinho/deletar/<int:item_id>/', deletar_item_carrinho, name='deletar_item_carrinho'),
 ]
 
 if settings.DEBUG:
