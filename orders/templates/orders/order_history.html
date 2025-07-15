@@ -1,0 +1,173 @@
+<!-- orders/order_history.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Pedidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinha ao topo */
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 800px;
+        }
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+        .messages li {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        .messages .success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .messages .info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .messages .warning {
+            background-color: #fffbeb;
+            color: #92400e;
+        }
+        .messages .error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .order-card {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+        }
+        .order-id {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .order-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .order-details p {
+            color: #4b5563;
+            margin-bottom: 0.5rem;
+        }
+        .order-total {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #065f46;
+            text-align: right;
+            margin-top: 1rem;
+        }
+        .btn {
+            background-color: #4f46e5;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #4338ca;
+        }
+        .no-orders {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+            border: 1px dashed #d1d5db;
+            border-radius: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Meu Histórico de Pedidos</h1>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if orders %}
+            <div class="order-list">
+                {% for order in orders %}
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">Pedido #{{ order.id }}</span>
+                            <span class="order-status
+                                {% if order.status == 'completed' %}status-completed{% elif order.status == 'cancelled' %}status-cancelled{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="order-details">
+                            <p>Criado em: {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                            <p>Itens: {{ order.items.count }}</p>
+                        </div>
+                        <div class="order-total">
+                            Total: R$ {{ order.total|floatformat:2 }}
+                        </div>
+                        <div class="mt-4 text-right">
+                            <a href="{% url 'view_order' order.id %}" class="btn">Ver Detalhes</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-orders">
+                <p>Você ainda não tem pedidos finalizados ou cancelados.</p>
+                <p class="mt-4"><a href="{% url 'create_order' %}" class="btn">Iniciar um Novo Pedido</a></p>
+            </div>
+        {% endif %}
+
+        <div class="mt-6 text-center">
+            <a href="{% url 'create_order' %}" class="btn">Voltar para Iniciar Pedido</a>
+        </div>
+    </div>
+</body>
+</html>
