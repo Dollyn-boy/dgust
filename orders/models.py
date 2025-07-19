@@ -2,6 +2,7 @@ from django.db import models
 from products.models import Product, PizzaBorder, PizzaFlavor, Option # Removido OptionType, pois não é usado diretamente aqui
 from django.contrib.auth.models import User
 from combos.models import Combo
+from promotions.models import Promotion
 
 # Seus modelos Category, Product, PizzaBorder, PizzaFlavor, OptionType, Option
 # (Assumindo que estão definidos em products.models ou outro arquivo importado)
@@ -39,15 +40,24 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name='order_items')
     combo = models.ForeignKey(Combo, on_delete=models.SET_NULL, null=True, blank=True, related_name='order_items_as_combo') # NOVO CAMPO
-
-
+    
+    observation = models.TextField(max_length=400, null=True, blank=True)
     pizza_border = models.ForeignKey(PizzaBorder, on_delete=models.SET_NULL, null=True, blank=True, related_name='order_items')
     pizza_flavors = models.ManyToManyField(PizzaFlavor, related_name='order_items', blank=True)
-    # promotion = models.ForeignKey(Promotion, on_delete=models.SET_NULL, null=True, blank=True, related_name='order_items') # Assumindo que Promotion existe
+
     options = models.ManyToManyField(Option, related_name='order_items', blank=True)
     #parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subitems')
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2)
+
+    applied_promotion = models.ForeignKey(
+        Promotion, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='applied_order_items',
+        help_text="A promoção que foi aplicada a este item no momento da compra."
+    )
 
     def __str__(self):
         if self.product:
@@ -62,3 +72,4 @@ class OrderItem(models.Model):
             raise models.ValidationError("Um OrderItem não pode ter um Produto e um Combo ao mesmo tempo.")
         if not self.product and not self.combo:
             raise models.ValidationError("Um OrderItem deve ter um Produto ou um Combo.")
+

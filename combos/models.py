@@ -4,10 +4,7 @@ from products.models import Product
 class Combo(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=300, blank=True)
-    # Preço base do combo, pode ser calculado ou fixo
     price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00) 
-    desconto_percentual = models.DecimalField(max_digits=5, decimal_places=2, default=0.00, 
-                                            help_text="Desconto percentual aplicado ao preço total dos itens do combo.")
     active = models.BooleanField(default=True)
 
     def __str__(self):

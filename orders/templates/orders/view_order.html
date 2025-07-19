@@ -158,32 +158,67 @@
         <h2 class="text-2xl font-semibold text-gray-700 mb-3">Itens do Pedido</h2>
         {% if order.items.all %}
             <div class="item-list">
-                {% for item in order.items.all %}
-                    <div class="item">
-                        <div class="item-info">
-                            <div class="item-name">{{ item.product.name|default:"Produto Desconhecido" }}</div>
-                            {% if item.product.category.name == 'Pizza' %}   
-                                {% for flavor in item.pizza_flavors.all %} 
-                                    <div class="item-quantity">{{ flavor.name }}</div>
-                                {% endfor %}
+               {% for item in order.items.all %}
+                <div class="item">
+                    <div class="item-info">
+                        {% if item.product %}
+                            <div class="item-name">{{ item.product.name }}</div>
+                            
+                            {% if item.product.category.name == 'Pizza' %}
+                                {% if item.pizza_border %}
+                                    <div class="item-quantity text-sm text-gray-500">Borda: {{ item.pizza_border.name }}</div>
+                                {% endif %}
+                                {% if item.pizza_flavors.all %}
+                                    <div class="item-quantity text-sm text-gray-500">Sabores:</div>
+                                    <ul class="list-disc list-inside text-gray-500 text-sm">
+                                        {% for flavor in item.pizza_flavors.all %}
+                                            <li>{{ flavor.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
                             {% endif %}
-                            <div class="item-quantity">Quantidade: {{ item.quantity }}</div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="item-price">R$ {{ item.price|floatformat:2 }}</div>
-                            <form method="post" action="{% url 'remove_item_from_order' order.id item.id %}">
-                                {% csrf_token %}
-                                <button type="submit" title="Remover" class="text-red-600 hover:text-red-800">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                {% endfor %}
+
+                            {% if item.options.all %}
+                                <div class="item-quantity text-sm text-gray-500">Opções:</div>
+                                <ul class="list-disc list-inside text-gray-500 text-sm">
+                                    {% for option in item.options.all %}
+                                        <li>{{ option.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
+                        {% elif item.combo %}
+                            <div class="item-name">Combo: {{ item.combo.name }}</div>
+                            
+                            {% if item.combo.combo_items.all %}
+                                <div class="item-quantity text-sm text-gray-500">Itens do combo:</div>
+                                <ul class="list-disc list-inside text-gray-500 text-sm">
+                                    {% for combo_item in item.combo.combo_items.all %}
+                                        <li>{{ combo_item.quantity }}× {{ combo_item.product.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% else %}
+                <div class="item-name text-gray-500 italic">Item desconhecido</div>
+            {% endif %}
+
+            <div class="item-quantity">Quantidade: {{ item.quantity }}</div>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="item-price">R$ {{ item.price|floatformat:2 }}</div>
+            <form method="post" action="{% url 'remove_item_from_order' order.id item.id %}">
+                {% csrf_token %}
+                <button type="submit" title="Remover" class="text-red-600 hover:text-red-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+{% endfor %}
             </div>
         {% else %}
             <p class="text-gray-500 italic">Nenhum item neste pedido ainda.</p>

@@ -1,0 +1,176 @@
+<!-- products/combo_list.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Combos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 900px;
+        }
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+        .messages li {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        .messages .success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .messages .info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .messages .warning {
+            background-color: #fffbeb;
+            color: #92400e;
+        }
+        .messages .error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .grid-section {
+            margin-bottom: 3rem;
+        }
+        .grid-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .item-card {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .item-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        .item-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        .item-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #065f46;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            background-color: #4f46e5;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #4338ca;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-actions">
+            <h1 class="text-3xl font-bold text-gray-800">Nossos Combos</h1>
+            {% if user.is_authenticated and order %}
+                <a href="{% url 'view_order' order.id %}" class="btn">Ver Meu Carrinho (Pedido #{{ order.id }})</a>
+            {% elif not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn btn-secondary">Entrar para Comprar</a>
+            {% endif %}
+        </div>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if combos %}
+            <div class="item-grid">
+                {% for combo in combos %}
+                    <div class="item-card">
+                        <div>
+                            <h3 class="item-name">{{ combo.name }}</h3>
+                            <p class="item-description">{{ combo.description|truncatechars:100 }}</p>
+                        </div>
+                        <div>
+                            <p class="item-price">R$ {{ combo.price|floatformat:2 }}</p>
+                            {% if combo.desconto_percentual > 0 %}
+                                <p class="text-sm text-green-600 font-semibold mb-2">Desconto: {{ combo.desconto_percentual|floatformat:0 }}%</p>
+                            {% endif %}
+                            <a href="{% url 'combo_detail' combo.id %}" class="btn w-full">Ver Detalhes do Combo</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center text-gray-600 italic">Nenhum combo disponível no momento.</p>
+        {% endif %}
+
+        <a href="{% url 'product_list' %}" class="back-link">Voltar para a lista de produtos</a>
+    </div>
+</body>
+</html>

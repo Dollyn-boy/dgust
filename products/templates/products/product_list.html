@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Produtos</title>
+    <title>Lista de Produtos e Combos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -53,12 +53,22 @@
             background-color: #fee2e2;
             color: #991b1b;
         }
-        .product-grid {
+        .grid-section {
+            margin-bottom: 3rem;
+        }
+        .grid-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .item-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
-        .product-card {
+        .item-card {
             background-color: #f9fafb;
             border: 1px solid #e5e7eb;
             border-radius: 0.75rem;
@@ -68,25 +78,24 @@
             justify-content: space-between;
             height: 100%;
         }
-        .product-name {
+        .item-name {
             font-size: 1.25rem;
             font-weight: 600;
             color: #1f2937;
             margin-bottom: 0.5rem;
         }
-        .product-description {
+        .item-description {
             color: #6b7280;
             font-size: 0.9rem;
             margin-bottom: 1rem;
-            flex-grow: 1; /* Permite que a descrição ocupe o espaço disponível */
+            flex-grow: 1;
         }
-        .product-price {
+        .item-price {
             font-size: 1.5rem;
             font-weight: 700;
             color: #065f46;
             margin-bottom: 1rem;
         }
-        /* Removido .add-to-cart-form e .quantity-input pois a ação de adicionar será na página de detalhes */
         .btn {
             background-color: #4f46e5;
             color: #ffffff;
@@ -118,12 +127,33 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
+        .original-price {
+            text-decoration: line-through;
+            color: #9ca3af; /* text-gray-400 */
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+        .discount-badge {
+            background-color: #fcd34d; /* bg-amber-300 */
+            color: #78350f; /* text-amber-900 */
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        .dynamic-price-message {
+            color: #4b5563; /* text-gray-600 */
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-actions">
-            <h1 class="text-3xl font-bold text-gray-800">Nossos Produtos</h1>
+            <h1 class="text-3xl font-bold text-gray-800">Nosso Cardápio</h1>
             {% if user.is_authenticated and order %}
                 <a href="{% url 'view_order' order.id %}" class="btn">Ver Meu Carrinho (Pedido #{{ order.id }})</a>
             {% elif not user.is_authenticated %}
@@ -139,25 +169,78 @@
             </ul>
         {% endif %}
 
-        {% if products %}
-            <div class="product-grid">
-                {% for product in products %}
-                    <div class="product-card">
-                        <div>
-                            <h2 class="product-name">{{ product.name }}</h2>
-                            <p class="product-description">{{ product.description }}</p>
+        <!-- Seção de Produtos -->
+        <div class="grid-section">
+            <h2 class="grid-title">Produtos Individuais</h2>
+            {% if products %}
+                <div class="item-grid">
+                    {% for product in products %}
+                        <div class="item-card">
+                            <div>
+                                <h3 class="item-name">{{ product.name }}</h3>
+                                <p class="item-description">{{ product.description|truncatechars:100 }}</p>
+                            </div>
+                            <div>
+                                {% with active_promotion=product.get_active_promotion %}
+                                    {# Check if it's a pizza with dynamic price (price=0 and max_flavor_sections > 0) #}
+                                    {% if product.price == 0 and product.max_flavor_sections and product.max_flavor_sections > 0 %}
+                                        <p class="dynamic-price-message">Preço estimado</p>
+                                        {% if active_promotion %}
+                                            <span class="discount-badge">Em Promoção!</span>
+                                            <p class="item-price">
+                                                <span class="original-price">R$ {{ product.get_estimated_base_price_for_display|floatformat:2 }}</span>
+                                                R$ {{ product.get_discounted_price|floatformat:2 }}
+                                            </p>
+                                        {% else %}
+                                            <p class="item-price">R$ {{ product.get_estimated_base_price_for_display|floatformat:2 }}</p>
+                                        {% endif %}
+                                    {% elif active_promotion %}
+                                        {# If there's an active promotion and price is not dynamic #}
+                                        <span class="discount-badge">Em Promoção!</span>
+                                        <p class="item-price">
+                                            <span class="original-price">R$ {{ product.price|floatformat:2 }}</span>
+                                            R$ {{ product.get_discounted_price|floatformat:2 }}
+                                        </p>
+                                    {% else %}
+                                        {# No active promotion #}
+                                        <p class="item-price">R$ {{ product.price|floatformat:2 }}</p>
+                                    {% endif %}
+                                {% endwith %}
+                                <a href="{% url 'product_detail' product.id %}" class="btn w-full">Ver Detalhes e Adicionar</a>
+                            </div>
                         </div>
-                        <div>
-                            <p class="product-price">R$ {{ product.price|floatformat:2 }}</p>
-                            <!-- Botão que redireciona para a página de detalhes do produto -->
-                            <a href="{% url 'product_detail' product.id %}" class="btn w-full">Ver Detalhes e Adicionar</a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-gray-600 italic">Nenhum produto individual disponível no momento.</p>
+            {% endif %}
+        </div>
+
+        <!-- Seção de Combos -->
+        <div class="grid-section">
+            <h2 class="grid-title">Combos Especiais</h2>
+            {% if combos %}
+                <div class="item-grid">
+                    {% for combo in combos %}
+                        <div class="item-card">
+                            <div>
+                                <h3 class="item-name">{{ combo.name }}</h3>
+                                <p class="item-description">{{ combo.description|truncatechars:100 }}</p>
+                            </div>
+                            <div>
+                                <p class="item-price">R$ {{ combo.price|floatformat:2 }}</p>
+                                {% if combo.desconto_percentual > 0 %}
+                                    <p class="text-sm text-green-600 font-semibold mb-2">Desconto: {{ combo.desconto_percentual|floatformat:0 }}%</p>
+                                {% endif %}
+                                <a href="{% url 'combo_detail' combo.id %}" class="btn w-full">Ver Detalhes do Combo</a>
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-center text-gray-600 italic">Nenhum produto disponível no momento.</p>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-gray-600 italic">Nenhum combo disponível no momento.</p>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>

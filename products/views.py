@@ -37,9 +37,9 @@ def product_detail(request, product_id):
     pizza_flavors = product.available_pizza_flavors.all().order_by('name')
     option_types = product.available_option_types.all().prefetch_related('options').order_by('name')
 
-    if product.max_flavors:
+    if product.max_flavor_sections:
         for pizza_flavor in pizza_flavors:
-            pizza_flavor.price = pizza_flavor.price / product.max_flavors 
+            pizza_flavor.price = pizza_flavor.price / product.max_flavor_sections 
 
     return render(request, 'products/product_detail.html', {
         'product': product,

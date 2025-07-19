@@ -1,136 +1,387 @@
 <!-- products/product_detail.html -->
- 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Produto: {{ product.name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f3f4f6; margin: 0; }
-        .container { max-width: 700px; margin: auto; background: #fff; padding: 2rem; margin-top: 2rem; border-radius: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .product-image { width: 100%; border-radius: .75rem; object-fit: cover; margin-bottom: 1rem; }
-        .product-name { font-size: 1.75rem; font-weight: 700; color: #1f2937; margin-bottom: .5rem; }
-        .product-category { font-size: .875rem; color: #4f46e5; margin-bottom: 1rem; }
-        .product-description { font-size: 1rem; color: #4b5563; margin-bottom: 1rem; }
-        .product-price { font-size: 1.5rem; font-weight: 700; color: #065f46; margin-bottom: 1.5rem; }
-        .option-group { margin-bottom: 1rem; }
-        .btn { background: #4f46e5; color: white; padding: .75rem 1rem; border-radius: .5rem; font-weight: 600; cursor: pointer; text-align: center; display: inline-block; border: none; }
-        .btn:hover { background: #4338ca; }
-        .checkbox-label { display: flex; align-items: center; margin-bottom: .5rem; }
-        .checkbox-label input { margin-right: .5rem; }
-        .flavor-selection-message { color: #b91c1c; font-size: .875rem; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            width: 700px;
+        }
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+        .messages li {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        .messages .success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .messages .info {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .messages .warning {
+            background-color: #fffbeb;
+            color: #92400e;
+        }
+        .messages .error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .product-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .product-name {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+        .product-category {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4f46e5;
+            margin-bottom: 1rem;
+        }
+        .product-description {
+            color: #4b5563;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .product-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #065f46;
+            margin-bottom: 1.5rem;
+        }
+        .add-to-cart-form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .quantity-input {
+            width: 80px;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .btn {
+            background-color: #4f46e5;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #4338ca;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .back-link {
+            margin-top: 2rem;
+            display: block;
+            text-align: center;
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .option-group {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            background-color: #f9fafb;
+        }
+        .option-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        .option-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+        }
+        .option-group input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+        }
+        .flavor-selection-message {
+            color: #ef4444; /* text-red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        .btn:disabled {
+            background-color: #9ca3af; /* bg-gray-400 */
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .flavor-selection-message.success {
+            color: #10b981; /* text-green-500 */
+        }
+        .flavor-selection-message.error {
+            color: #ef4444; /* text-red-500 */
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #9ca3af; /* text-gray-400 */
+            font-size: 1.5rem; /* Adjust based on current product-price size */
+            margin-right: 0.5rem;
+        }
+        .discount-badge {
+            background-color: #fcd34d; /* bg-amber-300 */
+            color: #78350f; /* text-amber-900 */
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            display: inline-block;
+        }
+        .dynamic-price-message {
+            color: #4b5563; /* text-gray-600 */
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-
-    {% if product.image %}
-        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-    {% else %}
-        <img src="https://placehold.co/700x300/E0E7FF/4F46E5?text={{ product.name|urlencode }}" alt="{{ product.name }}" class="product-image">
-    {% endif %}
-
-    <h1 class="product-name">{{ product.name }}</h1>
-    <p class="product-category">Categoria: {{ product.category.name }}</p>
-    <p class="product-description">{{ product.description }}</p>
-
-    <!-- TODO: Fazer o preç pizza se adequar aos sabores selcionados  -->
-    <p class="product-price">R$ {{ product.price|floatformat:2 }}</p>
-
-    {% if user.is_authenticated and order %}
-    <form method="post" action="{% url 'add_item_to_order' order.id %}">
-        {% csrf_token %}
-        <input type="hidden" name="product_id" value="{{ product.id }}">
-
-        {% if pizza_borders %}
-        <div class="option-group">
-            <label for="pizza_border">Borda da Pizza (Opcional):</label>
-            <select name="pizza_border_id" id="pizza_border" class="w-full border rounded">
-                <option value="">Nenhuma</option>
-                {% for border in pizza_borders %}
-                <option value="{{ border.id }}">{{ border.name }} (R$ {{ border.price|floatformat:2 }})</option>
+    <div class="container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
                 {% endfor %}
-            </select>
-        </div>
+            </ul>
         {% endif %}
 
-        {% if pizza_flavors %}
-            <div class="option-group">
-                <label>Sabores da Pizza (máx. {{ product.max_flavors }}):</label>
-                {% for flavor in pizza_flavors %}
-                <label class="checkbox-label">
-                    <input type="checkbox" name="pizza_flavor_ids" value="{{ flavor.id }}" class="pizza-flavor-checkbox">
-                    {{ flavor.name }} (R$ {{ flavor.price|floatformat:2 }})
-                </label>
-                {% endfor %}
-                <p id="flavor-selection-message" class="flavor-selection-message hidden">
-                    Você pode selecionar no máximo {{ product.max_flavors }} sabores.
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        {% else %}
+            <img src="https://placehold.co/700x300/E0E7FF/4F46E5?text={{ product.name|urlencode }}" alt="{{ product.name }}" class="product-image">
+        {% endif %}
+        <h1 class="product-name">{{ product.name }}</h1>
+        <p class="product-category">Categoria: {{ product.category.name }}</p>
+        <p class="product-description">{{ product.description }}</p>
+        
+        {# Display do Preço Original e Preço com Desconto #}
+        {% with active_promotion=product.get_active_promotion %}
+            {# Check if it's a pizza with dynamic price (price=0 and max_flavor_sections > 0) #}
+            {% if product.price == 0 and product.max_flavor_sections and product.max_flavor_sections > 0 %}
+                <p class="dynamic-price-message">Preço estimado (calculado com base nos sabores mais baratos):</p>
+                {% if active_promotion %}
+                    <span class="discount-badge">Em Promoção! {{ active_promotion.name }}</span>
+                    <p class="product-price">
+                        <span class="original-price">R$ {{ product.get_estimated_base_price_for_display|floatformat:2 }}</span>
+                        R$ {{ product.get_discounted_price|floatformat:2 }}
+                    </p>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Desconto: {{ active_promotion.discount_value|floatformat:0 }}%
+                        aplicável ao preço total da pizza.
+                    </p>
+                {% else %}
+                    <p class="product-price">
+                        R$ {{ product.get_estimated_base_price_for_display|floatformat:2 }}
+                    </p>
+                {% endif %}
+            {% elif active_promotion %}
+                {# If there's an active promotion and price is not dynamic (regular product or pizza with base price > 0) #}
+                <span class="discount-badge">Em Promoção! {{ active_promotion.name }}</span>
+                <p class="product-price">
+                    <span class="original-price">R$ {{ product.price|floatformat:2 }}</span>
+                    R$ {{ product.get_discounted_price|floatformat:2 }}
                 </p>
-            </div>
+                <p class="text-sm text-gray-600 mb-4">
+                    Desconto: {{ active_promotion.discount_value|floatformat:0 }}%
+                    até {{ active_promotion.end_date|date:"d/m/Y H:i" }}
+                </p>
+            {% else %}
+                {# No active promotion #}
+                <p class="product-price">R$ {{ product.price|floatformat:2 }}</p>
+            {% endif %}
+        {% endwith %}
+
+        {% if user.is_authenticated and order %}
+            <form method="post" action="{% url 'add_item_to_order' order.id %}" class="add-to-cart-form flex-col items-stretch" data-max-flavor-sections="{{ product.max_flavor_sections|default:'0' }}">
+                {% csrf_token %}
+                <input type="hidden" name="item_type" value="product"> {# Indica que é um produto #}
+                <input type="hidden" name="item_id" value="{{ product.id }}"> {# ID do produto #}
+                
+                {# Hidden input to send the fixed number of flavor sections to the backend #}
+                <input type="hidden" name="number_of_flavor_sections" value="{{ product.max_flavor_sections|default:'1' }}">
+
+                <!-- Opções de Borda (se houver bordas associadas a este produto) -->
+                {% if pizza_borders %}
+                    <div class="option-group w-full">
+                        <label for="pizza_border">Borda da Pizza (Opcional):</label>
+                        <select id="pizza_border" name="pizza_border_id" class="w-full">
+                            <option value="">Nenhuma</option>
+                            {% for border in pizza_borders %}
+                                <option value="{{ border.id }}">{{ border.name }} (R$ {{ border.price|floatformat:2 }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+
+                <!-- Opções de Sabores (se houver sabores associados a este produto) -->
+                {% if pizza_flavors and product.max_flavor_sections and product.max_flavor_sections > 0 %}
+                    <div class="option-group w-full" id="pizza-flavors-group">
+                        <label>Sabores da Pizza (Escolha exatamente {{ product.max_flavor_sections }}):</label>
+                        {% for flavor in pizza_flavors %}
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="pizza_flavor_ids" value="{{ flavor.id }}" class="pizza-flavor-checkbox">
+                                {{ flavor.name }} (R$ {{ flavor.price|floatformat:2 }})
+                            </label>
+                        {% endfor %}
+                        <p id="flavor-selection-message" class="flavor-selection-message hidden"></p>
+                    </div>
+                {% elif pizza_flavors %}
+                    <p class="text-gray-600 italic">Este produto não permite seleção de sabores múltiplos.</p>
+                {% endif %}
+
+                <!-- Opções Genéricas (para produtos normais) -->
+                {% for option_type in option_types %}
+                    <div class="option-group w-full">
+                        <label>{{ option_type.name }}:</label>
+                        {% for option in option_type.options.all %}
+                            <label class="checkbox-label">
+                                <input type="radio" name="option_type_{{ option_type.id }}" value="{{ option.id }}">
+                                {{ option.name }} (R$ {{ option.price|floatformat:2 }})
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                
+                <div class="option-group">
+                    <label for="observation" class="block text-gray-700 font-medium mb-1">Observações (opcional):</label>
+                    <textarea name="observation" id="observation" rows="3" placeholder="Ex: Sem cebola, cortar em 8 pedaços..." class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"></textarea>
+                </div>
+                
+                <div class="flex items-center gap-4 w-full mt-4">
+                    <label for="quantity" class="sr-only">Quantidade:</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" class="quantity-input" aria-label="Quantidade">
+                    <button type="submit" class="btn flex-grow" id="add-to-cart-button">Adicionar ao Carrinho</button>
+                </div>
+            </form>
+        {% elif not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="btn btn-secondary w-full">Faça login para adicionar ao carrinho</a>
+        {% else %}
+            <p class="text-gray-600 text-center">Você precisa de um carrinho ativo para adicionar este produto. <a href="{% url 'create_order' %}" class="text-indigo-600 hover:underline">Clique aqui para iniciar um novo.</a></p>
         {% endif %}
 
-        {% for option_type in option_types %}
-        <div class="option-group">
-            <label>{{ option_type.name }}:</label>
-            {% for option in option_type.options.all %}
-            <label class="checkbox-label">
-                <input type="radio" name="option_type_{{ option_type.id }}" value="{{ option.id }}">
-                {{ option.name }} (R$ {{ option.price|floatformat:2 }})
-            </label>
-            {% endfor %}
-            <p class="flavor-selection-message hidden">
-                Você pode selecionar no máximo 1 opção.
-            </p>
-        </div>
-        {% endfor %}
+        <a href="{% url 'product_list' %}" class="back-link">Voltar para a lista de produtos</a>
+    </div>
 
-        <div class="option-group">
-            <input type="number" name="quantity" value="1" min="1" class="w-20 border rounded text-center">
-            <button type="submit" class="btn">Adicionar ao Carrinho</button>
-        </div>
-    </form>
-    {% elif not user.is_authenticated %}
-    <a href="{% url 'login' %}" class="btn">Faça login para adicionar ao carrinho</a>
-    {% else %}
-    <p>Você precisa de um carrinho ativo para adicionar este produto. <a href="{% url 'create_order' %}" class="text-indigo-600 underline">Criar novo carrinho</a></p>
-    {% endif %}
-
-    <a href="{% url 'product_list' %}" class="text-indigo-600 underline block mt-4">Voltar para a lista de produtos</a>
-
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
     const flavorCheckboxes = document.querySelectorAll('.pizza-flavor-checkbox');
-    const msg = document.getElementById('flavor-selection-message');
-    const maxFlavors = {{ product.max_flavors|default:"1" }};
-    const form = document.querySelector('form');
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const flavorSelectionMessage = document.getElementById('flavor-selection-message');
+    const form = document.querySelector('.add-to-cart-form');
+    const maxFlavorSections = parseInt(form.dataset.maxFlavorSections || '0'); 
+    const addToCartButton = document.getElementById('add-to-cart-button');
 
-    function update() {
+    function updateFlavorSelection() {
         const selectedCount = Array.from(flavorCheckboxes).filter(cb => cb.checked).length;
 
-        if (selectedCount > maxFlavors) {
-            flavorCheckboxes.forEach(cb => { if (!cb.checked) cb.disabled = true; });
-            msg.textContent = `Você pode selecionar no máximo ${maxFlavors} sabores.`;
-            msg.classList.remove('hidden');
-            submitBtn.disabled = true;
-        } else if (selectedCount < maxFlavors) {
+        // Remove classes antigas
+        flavorSelectionMessage.classList.remove('success', 'error');
+
+        if (maxFlavorSections === 0) {
+            addToCartButton.disabled = false;
+            flavorSelectionMessage.classList.add('hidden');
+            return;
+        }
+
+        if (selectedCount < maxFlavorSections) {
             flavorCheckboxes.forEach(cb => cb.disabled = false);
-            msg.textContent = `Selecione exatamente ${maxFlavors} sabores para continuar.`;
-            msg.classList.remove('hidden');
-            submitBtn.disabled = true;
-        } else {
+            flavorSelectionMessage.textContent = `Selecione mais ${maxFlavorSections - selectedCount} sabor(es).`;
+            flavorSelectionMessage.classList.remove('hidden');
+            flavorSelectionMessage.classList.add('error');
+            addToCartButton.disabled = true;
+        } else if (selectedCount === maxFlavorSections) {
+            flavorCheckboxes.forEach(cb => {
+                if (!cb.checked) cb.disabled = true;
+            });
+            flavorSelectionMessage.textContent = `Pronto! Você selecionou todos os sabores necessários.`;
+            flavorSelectionMessage.classList.remove('hidden');
+            flavorSelectionMessage.classList.add('success');
+            addToCartButton.disabled = false;
+        } else { // Passou do limite
             flavorCheckboxes.forEach(cb => cb.disabled = false);
-            msg.classList.add('hidden');
-            submitBtn.disabled = false;
+            flavorSelectionMessage.textContent = `Você selecionou sabores demais! Selecione exatamente ${maxFlavorSections}.`;
+            flavorSelectionMessage.classList.remove('hidden');
+            flavorSelectionMessage.classList.add('error');
+            addToCartButton.disabled = true;
         }
     }
 
-    flavorCheckboxes.forEach(cb => cb.addEventListener('change', update));
-    update(); // inicializa ao carregar
+    if (flavorCheckboxes.length > 0 && maxFlavorSections > 0) {
+        addToCartButton.disabled = true; // começa desativado
+        flavorCheckboxes.forEach(cb => cb.addEventListener('change', updateFlavorSelection));
+        updateFlavorSelection();
+    } else {
+        addToCartButton.disabled = false; // sem sabores, botão liberado
+    }
 });
 </script>
+
 </body>
 </html>
