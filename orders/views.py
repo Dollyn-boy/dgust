@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Order, OrderItem
 from combos.models import Combo, ComboItem
 from products.models import Product, PizzaBorder, PizzaFlavor, Option
+from django.http import JsonResponse
 
 # Create your views here.
 @login_required
@@ -39,23 +40,33 @@ def remove_item_from_order(request, order_id, item_id):
     if request.method == 'POST':
         try:
             item = get_object_or_404(OrderItem, id=item_id, order=order)
-
             item.delete()
 
             order.total = sum(i.price for i in order.items.all())
             order.save()
 
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': "Item removido com sucesso!",
+                    'order_total': float(order.total),
+                    'item_count': order.items.count()
+                })
+
             messages.success(request, "Item removido com sucesso!")
-            return redirect('view_order', order_id=order.id)
+            return redirect('home')
 
-        except (OrderItem.DoesNotExist, ValueError) as e:
-            messages.error(request, f"Erro ao remover item: {e}")
-            return redirect('view_order', order_id=order.id)
         except Exception as e:
-            messages.error(request, f"Ocorreu um erro inesperado: {e}")
-            return redirect('view_order', order_id=order.id)
+            error_msg = f"Ocorreu um erro: {str(e)}"
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'message': error_msg})
+            messages.error(request, error_msg)
+            return redirect('home')
 
-    messages.error(request, "Método não permitido para remover item. Use POST.")
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': False, 'message': "Método não permitido."})
+    
+    messages.error(request, "Método não permitido.")
     return redirect('view_order', order_id=order.id)
 
 

@@ -3,251 +3,593 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Pizzaria D`gust</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Pizzaria D`gust</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
 
-  <!-- Favicons -->
-  <link href="{% static 'img/favicon.png' %}" rel="icon">
-  <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
 
-  <!-- Fonts -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Vendor CSS Files -->
-  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/bootstrap/css/bootstrap-icons.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
-  <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap/css/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/aos/aos.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
 
-  <!-- Main CSS File -->
-  <link href="{% static 'css/main.css' %}" rel="stylesheet">
-  <style>
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <style>
     .offcanvas {
-      transition: transform 0.2s ease-in-out;
+        transition: transform 0.2s ease-in-out;
     }
 
     .item-card {
-      border: 1px solid #e0e0e0;
-      border-radius: .75rem;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid #e0e0e0;
+        border-radius: .75rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        background-color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
+
     .pedido-header {
-      font-weight: 500;
-      font-size: 1.1rem;
+        font-weight: 500;
+        font-size: 1.1rem;
     }
+
     .delete-btn {
-      color: #dc3545;
-      cursor: pointer;
+        color: #dc3545;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        margin-left: 10px;
     }
+
     .delete-btn:hover {
-      color: #a71d2a;
+        color: #a71d2a;
     }
-  </style>
+
+    .btn-getstarted {
+        background: #ffc107;
+        color: #343a40;
+        padding: 8px 20px;
+        border-radius: 50px;
+        transition: 0.3s;
+        white-space: nowrap;
+        font-weight: 600;
+    }
+
+    .btn-getstarted:hover {
+        background: #e0a800;
+        color: #fff;
+    }
+
+    .user-info-card {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: .75rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .user-info-card .icon-circle {
+        background-color: #e2f0e2;
+        color: #28a745;
+        padding: 0.5rem;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+    }
+
+    .user-info-card .user-details {
+        font-weight: 500;
+        color: #343a40;
+    }
+
+    .user-info-card .user-details span {
+        margin-right: 0.5rem;
+    }
+
+    .item-details h6 {
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+
+    .item-details small {
+        color: #6c757d;
+        display: block;
+    }
+
+    .item-details ul {
+        list-style: disc;
+        padding-left: 20px;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+
+    .item-details ul li {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .item-price-quantity {
+        display: flex;
+        align-items: center;
+    }
+
+    .item-price {
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .offcanvas-body .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-top: 1rem;
+    }
+
+    .offcanvas-body .actions .btn {
+        width: 100%;
+        border-radius: .5rem;
+        padding: .75rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease; /* Suavização geral */
+    }
+
+    /* Suaviza o hover do btn-danger */
+    .offcanvas-body .actions .btn-danger {
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .offcanvas-body .actions .btn-danger:hover {
+        background-color: #dc6772ff;
+        border-color: #dc3545;
+    }
+
+    .offcanvas-body .actions .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    /* Hover para btn-outline-danger */
+    .offcanvas-body .actions .btn-outline-danger {
+        color: #dc3545;
+        border: 1px solid #dc3545;
+        background-color: transparent;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .offcanvas-body .actions .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: #fff;
+    }
+</style>
 </head>
 
 <body class="index-page">
 
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
+    <header id="header" class="header d-flex align-items-center sticky-top">
+        <div class="container position-relative d-flex align-items-center justify-content-between">
 
-      <a href="#" class="logo d-flex align-items-center me-auto me-xl-0">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="assets/img/logo.png" alt=""> -->
-        <h1 class="sitename">D'Gust</h1>
-        <span>.</span>
-      </a>
+            <a href="#" class="logo d-flex align-items-center me-auto me-xl-0">
+                <h1 class="sitename">D'Gust</h1>
+                <span>.</span>
+            </a>
 
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="#hero" class="active">Home<br></a></li>
-          <li><a href="#about">Sobre</a></li>
-          <li><a href="#menu">Promoções</a></li>
-          <li><a href="#events">Cardápios</a></li>
-          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <nav id="navmenu" class="navmenu">
                 <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
+                    <li><a href="#hero" class="active">Home<br></a></li>
+                    <li><a href="#about">Sobre</a></li>
+                    <li><a href="#menu">Promoções</a></li>
+                    <li><a href="#events">Cardápios</a></li>
+                    <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="#">Dropdown 1</a></li>
+                            <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                                <ul>
+                                    <li><a href="#">Deep Dropdown 1</a></li>
+                                    <li><a href="#">Deep Dropdown 2</a></li>
+                                    <li><a href="#">Deep Dropdown 3</a></li>
+                                    <li><a href="#">Deep Dropdown 4</a></li>
+                                    <li><a href="#">Deep Dropdown 5</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Dropdown 2</a></li>
+                            <li><a href="#">Dropdown 3</a></li>
+                            <li><a href="#">Dropdown 4</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#contact">Contato</a></li>
                 </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li>
-          <li><a href="#contact">Contato</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
 
-      <a class="btn-getstarted position-relative d-flex align-items-center" href="#" 
-        data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
-        <i class="bi bi-bag fs-5"></i>
-        <span id="cartSubtotal" class="ms-2">R$ 0,00</span>
-      </a>
-                        
+            {% if user.is_authenticated %}
+                {% if order %} {# Usuário logado e com pedido ativo #}
+                    <a class="btn-getstarted position-relative d-flex align-items-center" href="#" 
+                        data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                        <i class="bi bi-bag fs-5"></i>
+                        <span id="cartSubtotal" class="ms-2">R$ {{ order.total|floatformat:2 }}</span>
+                    </a>
+                {% else %} {# Usuário logado, mas sem pedido ativo #}
+                    <a href="{% url 'create_order' %}" class="btn-getstarted d-flex align-items-center">
+                        <i class="bi bi-cart-plus fs-5"></i> {# Ícone para iniciar novo pedido #}
+                        <span class="ms-2">Iniciar Pedido</span>
+                    </a>
+                {% endif %}
+            {% else %} {# Usuário não logado #}
+                <a href="{% url 'register_or_login' %}" class="btn-getstarted d-flex align-items-center">
+                    <i class="bi bi-person fs-5"></i> {# Ícone para login #}
+                    <span class="ms-2">Entrar</span>
+                </a>
+            {% endif %}
 
-    </div>
-  </header>
-
-
-  <main class="main">
-    <div id="content">
-        {% block content %}
-        {% endblock %}
-    </div>
-  </main>
-
-  <footer id="footer" class="footer dark-background">
-
-  <div class="container">
-    <div class="row gy-3">
-      <div class="col-lg-3 col-md-6 d-flex">
-        <i class="bi bi-geo-alt icon"></i>
-        <div class="address">
-          <h4>Endereço</h4>
-          <p>Rua Exemplo, 123</p>
-          <p>Riachão do Jacuípe - BA, 44640-000</p>
         </div>
-      </div>
+    </header>
 
-      <div class="col-lg-3 col-md-6 d-flex">
-        <i class="bi bi-telephone icon"></i>
-        <div>
-          <h4>Contato</h4>
-          <p>
-            <strong>Telefone:</strong> <span>(75) 99999-9999</span><br>
-            <strong>Email:</strong> <span>contato@dgustpizzaria.com.br</span><br>
-          </p>
+
+    <main class="main">
+        <div id="content" class="container mt-5">
+            {% block content %}
+            {# Conteúdo específico da página será inserido aqui #}
+            {% endblock %}
         </div>
-      </div>
+    </main>
 
-      <div class="col-lg-3 col-md-6 d-flex">
-        <i class="bi bi-clock icon"></i>
-        <div>
-          <h4>Horário de Funcionamento</h4>
-          <p>
-            <strong>Seg-Sáb:</strong> <span>17h - 23h</span><br>
-            <strong>Domingo:</strong> <span>Fechado</span>
-          </p>
-        </div>
-      </div>
+    <footer id="footer" class="footer dark-background">
 
-      <div class="col-lg-3 col-md-6">
-        <h4>Redes Sociais</h4>
-        <div class="social-links d-flex">
-          <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-          <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-          <a href="#" class="whatsapp"><i class="bi bi-whatsapp"></i></a>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="container">
+            <div class="row gy-3">
+                <div class="col-lg-3 col-md-6 d-flex">
+                    <i class="bi bi-geo-alt icon"></i>
+                    <div class="address">
+                        <h4>Endereço</h4>
+                        <p>Rua Exemplo, 123</p>
+                        <p>Riachão do Jacuípe - BA, 44640-000</p>
+                    </div>
+                </div>
 
-  <div class="container copyright text-center mt-4">
-    <p>© <span>Copyright</span> <strong class="px-1 sitename">D'Gust</strong> <span>Todos os direitos reservados</span></p>
-  </div>
+                <div class="col-lg-3 col-md-6 d-flex">
+                    <i class="bi bi-telephone icon"></i>
+                    <div>
+                        <h4>Contato</h4>
+                        <p>
+                            <strong>Telefone:</strong> <span>(75) 99999-9999</span><br>
+                            <strong>Email:</strong> <span>contato@dgustpizzaria.com.br</span><br>
+                        </p>
+                    </div>
+                </div>
 
-</footer>
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+                <div class="col-lg-3 col-md-6 d-flex">
+                    <i class="bi bi-clock icon"></i>
+                    <div>
+                        <h4>Horário de Funcionamento</h4>
+                        <p>
+                            <strong>Seg-Sáb:</strong> <span>17h - 23h</span><br>
+                            <strong>Domingo:</strong> <span>Fechado</span>
+                        </p>
+                    </div>
+                </div>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
-
-<!-- Offcanvas da sacola -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
-  <div class="offcanvas-header">
-    <h1 class="offcanvas-title">Sua sacola (<span id="cartItemCount">0</span>)</h1>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
-  </div>
-  <div class="offcanvas-body d-flex flex-column justify-content-between">
-    <div>
-      <!-- Endereço de entrega -->
-      <div class="card mb-3">
-        <div class="card-body d-flex align-items-center justify-content-between">
-          <div class="d-flex align-items-center">
-            <div class="bg-light rounded-circle p-2 me-3">
-              <i class="bi bi-geo-alt-fill text-success"></i>
+                <div class="col-lg-3 col-md-6">
+                    <h4>Redes Sociais</h4>
+                    <div class="social-links d-flex">
+                        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="whatsapp"><i class="bi bi-whatsapp"></i></a>
+                    </div>
+                </div>
             </div>
-            <span id="deliveryAddress">Selecione um endereço de entrega</span>
-          </div>
-          <i class="bi bi-chevron-right"></i>
         </div>
-      </div>
 
-      <!-- Aplicar benefício -->
-      <div class="card mb-3">
-        <div class="card-body">
-          <div class="fw-semibold mb-2">Aplicar benefício</div>
-          <div class="d-flex align-items-center bg-light rounded p-2">
-            <i class="bi bi-gift me-2 text-secondary"></i>
-            <span id="benefitLabel" class="text-secondary">Aplique um benefício</span>
-          </div>
+        <div class="container copyright text-center mt-4">
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">D'Gust</strong> <span>Todos os direitos reservados</span></p>
         </div>
-      </div>
 
-      <div class="item-card d-flex justify-content-between align-items-center">
-        <div id="itensOptions"></div>
-      </div>
-      
-      <!-- Valores -->
-      <div class="card">
-        <div class="card-body">
-          <div class="fw-semibold mb-2">Valores</div>
-          <div class="d-flex justify-content-between mb-1">
-            <span>Subtotal</span>
-            <span id="cartSubtotal">R$ 0,00</span>
-          </div>
-          <div class="d-flex justify-content-between mb-1">
-            <span>Taxa de entrega</span>
-            <span id="deliveryFee">Grátis</span>
-          </div>
-          <hr>
-          <div class="d-flex justify-content-between fw-bold">
-            <span>Total</span>
-            <span id="cartTotal">R$ 0,00</span>
-          </div>
+    </footer>
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
+        <div class="offcanvas-header">
+            <h1 class="offcanvas-title">Sua sacola (<span id="cartItemCount">0</span>)</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
         </div>
-      </div>
+        <div class="offcanvas-body d-flex flex-column justify-content-between">
+            <div>
+                <div class="user-info-card d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle me-3">
+                            <i class="bi bi-person-fill fs-5"></i>
+                        </div>
+                        <div class="user-details">
+                            <span id="ProfileUsername">Carregando...</span>
+                            <span id="ProfilePhone"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="fw-semibold mb-2">Aplicar benefício</div>
+                        <div class="d-flex align-items-center bg-light rounded p-2">
+                            <i class="bi bi-gift me-2 text-secondary"></i>
+                            <span id="benefitLabel" class="text-secondary">Aplique um benefício</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cartMessages"></div>
+
+                <h2 class="h5 fw-semibold mb-3">Itens do Pedido</h2>
+                <div id="itensOptions">
+                    {% if order.items.all %}
+                        {% for item in order.items.all %}
+                            <div class="item-card">
+                                <div class="item-details">
+                                    {% if item.product %}
+                                        <h6>{{ item.product.name }}</h6>
+                                        <small>Quantidade: {{ item.quantity }}</small>
+                                        
+                                        {% if item.product.category.name == 'Pizza' %}
+                                            {% if item.pizza_border %}
+                                                <small>Borda: {{ item.pizza_border.name }}</small>
+                                            {% endif %}
+                                            {% if item.pizza_flavors.all %}
+                                                <small>Sabores:</small>
+                                                <ul>
+                                                    {% for flavor in item.pizza_flavors.all %}
+                                                        <li>{{ flavor.name }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if item.options.all %}
+                                            <small>Opções:</small>
+                                            <ul>
+                                                {% for option in item.options.all %}
+                                                    <li>{{ option.name }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+
+                                    {% elif item.combo %}
+                                        <h6>Combo: {{ item.combo.name }}</h6>
+                                        <small>Quantidade: {{ item.quantity }}</small>
+                                        
+                                        {% if item.combo.combo_items.all %}
+                                            <small>Itens do combo:</small>
+                                            <ul>
+                                                {% for combo_item in item.combo.combo_items.all %}
+                                                    <li>{{ combo_item.quantity }}x {{ combo_item.product.name }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    {% else %}
+                                        <h6 class="text-muted fst-italic">Item desconhecido</h6>
+                                    {% endif %}
+                                </div>
+                                <div class="item-price-quantity">
+                                    <div class="item-price">R$ {{ item.price|floatformat:2 }}</div>
+                                    <button class="delete-btn" data-item-id="{{ item.id }}" data-url="{% url 'remove_item_from_order' order.id item.id %}">
+                                        <i class="bi bi-trash fs-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info text-center" role="alert">
+                            Sua sacola está vazia. Adicione itens!
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="card mt-3"> {# Adicionado mt-3 para espaçamento #}
+                    <div class="card-body">
+                        <div class="fw-semibold mb-2">Valores</div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Subtotal</span>
+                            <span id="cartSubtotalOffcanvas">R$ {{ order.total|floatformat:2 }}</span> {# Assume order.total já existe #}
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Taxa de entrega</span>
+                            <span id="deliveryFee">Grátis</span> {# Pode ser dinâmico também #}
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total</span>
+                            <span id="cartTotal">R$ {{ order.total|floatformat:2 }}</span> {# Assume order.total já existe #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                {% if order.status == 'pending' %}
+                    <form method="post" action="{% url 'complete_order' order.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger"
+                            {% if order.items.count < 1 %} disabled {% endif %}>
+                            Finalizar Pedido
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'cancel_order' order.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger"
+                            {% if order.items.count < 1 %} disabled {% endif %}>
+                            Cancelar Pedido
+                        </button>
+                    </form>
+                {% endif %}
+                <a href="{% url 'order_history' %}" class="btn btn-outline-danger">Ver Histórico</a>
+            </div>
+        </div>
     </div>
 
-    <!-- Botão no rodapé -->
-    <div class="p-3">
-      <button class="btn btn-danger center w-100 rounded-pill">Finalizar compra</button>
-    </div>
-  </div>
-</div>
+
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
+    <script src="{% static 'vendor/aos/aos.js' %}"></script>
+    <script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
+    <script src="{% static 'vendor/purecounter/purecounter_vanilla.js' %}"></script>
+    <script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
 
 
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'vendor/php-email-form/validate.js' %}"></script>
-<script src="{% static 'vendor/aos/aos.js' %}"></script>
-<script src="{% static 'vendor/glightbox/js/glightbox.min.js' %}"></script>
-<script src="{% static 'vendor/purecounter/purecounter_vanilla.js' %}"></script>
-<script src="{% static 'vendor/swiper/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const profileUsername = document.getElementById('ProfileUsername');
+            const profilePhone = document.getElementById('ProfilePhone');
+            const cartItemCount = document.getElementById('cartItemCount');
+            const cartSubtotal = document.getElementById('cartSubtotal'); // Do header
+            const cartSubtotalOffcanvas = document.getElementById('cartSubtotalOffcanvas'); // Do offcanvas
+            const cartTotal = document.getElementById('cartTotal'); // Do offcanvas
 
+            // Função para buscar dados do perfil
+            function fetchUserProfile() {
+                fetch("{% url 'user_profile_data' %}")
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erro ao carregar dados do usuário.');
+                        return response.json();
+                    })
+                    .then(data => {
+                        profileUsername.textContent = data.username;
+                        // Formatação do telefone: (XX) XXXXX-XXXX
+                        profilePhone.textContent = data.phone ? `(${data.phone.substring(0, 2)}) ${data.phone.substring(2, 7)}-${data.phone.substring(7, 11)}` : 'Não informado';
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar dados do perfil:', error);
+                        profileUsername.textContent = "Erro";
+                        profilePhone.textContent = "Erro";
+                    });
+            }
 
-<!-- Main JS File -->
-<script src="{% static 'js/scripts.js' %}"></script>
-<script>
+            function showCartMessage(message, type = 'success') {
+                const cartMessages = document.getElementById('cartMessages');
+                cartMessages.innerHTML = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                    </div>
+                `;
+            }
 
-</script>
+            // Função para atualizar os totais do carrinho (se necessário via JS)
+            function updateCartTotals(orderData) {
+                if (orderData) {
+                    cartItemCount.textContent = orderData.item_count || 0;
+                    cartSubtotal.textContent = `R$ ${orderData.total.toFixed(2)}`;
+                    cartSubtotalOffcanvas.textContent = `R$ ${orderData.total.toFixed(2)}`;
+                    cartTotal.textContent = `R$ ${orderData.total.toFixed(2)}`;
+                } else {
+                    cartItemCount.textContent = '0';
+                    cartSubtotal.textContent = 'R$ 0,00';
+                    cartSubtotalOffcanvas.textContent = 'R$ 0,00';
+                    cartTotal.textContent = 'R$ 0,00';
+                }
+            }
 
+            // Chamada inicial para buscar dados do perfil
+            fetchUserProfile();
+
+            // Adiciona um listener para o offcanvas ser aberto (se precisar recarregar dados)
+            var cartOffcanvas = document.getElementById('cartOffcanvas');
+            cartOffcanvas.addEventListener('show.bs.offcanvas', function () {
+                fetchUserProfile(); // Garante que os dados do perfil estejam atualizados ao abrir
+                // Você pode adicionar uma função aqui para recarregar os itens do pedido via AJAX,
+                // caso eles possam mudar sem um recarregamento completo da página.
+                // Exemplo: fetchOrderItems();
+            });
+            
+            
+
+            // Lógica para o botão de deletar item (exemplo)
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    const url = this.dataset.url;
+                    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    const itemCard = this.closest('.item-card');
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showCartMessage(data.message, 'success');
+                            updateCartTotals({
+                                item_count: data.item_count,
+                                total: data.order_total
+                            });
+                            itemCard.remove();
+
+                            // Verifica se o carrinho ficou vazio
+                            const itemCards = document.querySelectorAll('.item-card');
+                            if (itemCards.length === 0) {
+                                document.getElementById('itensOptions').innerHTML = `
+                                    <div class="alert alert-info text-center" role="alert">
+                                        Sua sacola está vazia. Adicione itens!
+                                    </div>
+                                `;
+                            }
+
+                            // Atualiza o contador do carrinho
+                            document.getElementById('cartItemCount').textContent = data.item_count;
+
+                            // Bloqueia botão de Finalizar Pedido se carrinho estiver vazio
+                            const finalizarBtn = document.querySelector('form[action*="complete_order"] button[type="submit"]');
+                            if (finalizarBtn) {
+                                if (data.item_count < 1) {
+                                    finalizarBtn.setAttribute('disabled', true);
+                                } else {
+                                    finalizarBtn.removeAttribute('disabled');
+                                }
+                            }
+                        } else {
+                            showCartMessage(data.message || 'Erro ao remover item.', 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        showCartMessage('Erro ao remover item.', 'danger');
+                    });
+                });
+            });
+
+            // Inicialização dos totais (se a página já carrega com o 'order' no contexto)
+            {% if order %}
+                updateCartTotals({
+                    item_count: {{ order.items.count }},
+                    total: {{ order.total|floatformat:2 }}
+                });
+            {% else %}
+                updateCartTotals(null);
+            {% endif %}
+
+        });
+        
+    </script>
 </body>
 
 </html>

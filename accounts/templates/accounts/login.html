@@ -1,6 +1,33 @@
-<form method="post" action="{% url 'register_or_login' %}">
-  {% csrf_token %}
-  <label>Username: <input type="text" name="username" required></label><br>
-  <label>Telefone: <input type="text" name="phone_number" required></label><br>
-  <button type="submit">Entrar / Registrar</button>
-</form>
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card p-4 shadow-sm" style="max-width: 450px; width: 100%;">
+        <h2 class="card-title text-center mb-4">Entrar ou Registrar</h2>
+
+        {% if messages %}
+            <ul class="messages list-unstyled">
+                {% for message in messages %}
+                    <li class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'info' %}alert-info{% elif message.tags == 'warning' %}alert-warning{% elif message.tags == 'error' %}alert-danger{% endif %}" role="alert">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="{% url 'register_or_login' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Nome de Usuário:</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone_number" class="form-label">Telefone:</label>
+                <input type="text" class="form-control" id="phone_number" name="phone_number" required>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-danger btn-lg">Entrar / Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
