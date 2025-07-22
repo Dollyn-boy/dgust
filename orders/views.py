@@ -16,12 +16,12 @@ def create_order(request):
 
         if existing_order:
             messages.info(request, "Você já tem um pedido ativo. Continue suas compras ou finalize o pedido atual.")
-            return redirect('view_order', order_id=existing_order.id)
+            return redirect('home')
         else:
             try:
                 new_order = Order.objects.create(user=request.user, total=0.00, status='pending')
                 messages.success(request, "Um novo carrinho de compras foi criado para você!")
-                return redirect('view_order', order_id=new_order.id)
+                return redirect('home')
                 
             except Exception as e:
                 messages.error(request, f"Ocorreu um erro ao criar o pedido: {e}")
@@ -29,7 +29,7 @@ def create_order(request):
 
     existing_order = Order.objects.filter(user=request.user, status='pending').first()
     if existing_order:
-        return redirect('view_order', order_id=existing_order.id)
+        return redirect('home')
     else:
         return render(request, 'orders/create_order.html') # Crie este template se necessário
     
@@ -70,163 +70,124 @@ def remove_item_from_order(request, order_id, item_id):
     return redirect('view_order', order_id=order.id)
 
 
+def update_order_total(order):
+    order.total = sum(item.price for item in order.items.all())
+    order.save()
+
+def redirect_back_with_error(request, message):
+    messages.error(request, message)
+    return redirect('home')
+
 @login_required
 def add_item_to_order(request, order_id):
-    """
-    Adiciona um item (Produto ou Combo) a um pedido existente.
-    Após a adição, redireciona o usuário de volta para a página de detalhes do item.
-    """
     order = get_object_or_404(Order, id=order_id, user=request.user, status='pending')
 
-    if request.method == 'POST':
-        item_type = request.POST.get('item_type') # 'product' ou 'combo'
-        item_id = request.POST.get('item_id')
-        quantity = int(request.POST.get('quantity', 1))
-        observation = request.POST.get('observation', '').strip()
+    if request.method != 'POST':
+        return redirect_back_with_error(request, "Método não permitido para adicionar item. Use POST.")
 
-        if not item_id or quantity <= 0:
-            messages.error(request, "ID do item e quantidade são obrigatórios e devem ser válidos.")
-            return redirect('product_list') # Redireciona para a lista de produtos como fallback
+    item_type = request.POST.get('item_type')  # 'product' ou 'combo'
+    item_id = request.POST.get('item_id')
+    quantity = int(request.POST.get('quantity', 1))
+    observation = request.POST.get('observation', '').strip()
 
-        try:
-            if item_type == 'product':
-                product = get_object_or_404(Product, id=item_id, active=True)
-                combo = None # Garante que combo é None para produtos
-                active_promotion = product.get_active_promotion()
+    if not item_id or quantity <= 0:
+        return redirect_back_with_error(request, "ID do item e quantidade são obrigatórios e devem ser válidos.")
 
-                pizza_border_id = request.POST.get('pizza_border_id')
-                pizza_flavor_ids = request.POST.getlist('pizza_flavor_ids')
-                number_of_flavor_sections = int(request.POST.get('number_of_flavor_sections', 1))
+    try:
+        if item_type == 'product':
+            return handle_product_addition(request, order, item_id, quantity, observation)
+        elif item_type == 'combo':
+            return handle_combo_addition(request, order, item_id, quantity, observation)
+        else:
+            return redirect_back_with_error(request, "Tipo de item inválido.")
 
-                option_ids = []
-                for key in request.POST:
-                    if key.startswith('option_type_'):
-                        option_id = request.POST.get(key)
-                        if option_id:
-                            option_ids.append(option_id)
-                
-                # Validações para produtos normais
-                if product.max_flavor_sections:
-                    if number_of_flavor_sections <= 0 or number_of_flavor_sections > product.max_flavor_sections:
-                        messages.error(request, f"Número de seções de sabor inválido para este produto. Máximo permitido: {product.max_flavor_sections}.")
-                        return redirect('product_detail', product_id=product.id)
-                    if pizza_flavor_ids and len(pizza_flavor_ids) > number_of_flavor_sections:
-                        messages.error(request, f"Você selecionou mais sabores ({len(pizza_flavor_ids)}) do que o número de seções permitido ({number_of_flavor_sections}).")
-                        return redirect('product_detail', product_id=product.id)
-                    if product.max_flavor_sections > 1 and number_of_flavor_sections > 1 and not pizza_flavor_ids:
-                        messages.error(request, "Você deve selecionar pelo menos um sabor para pizzas com múltiplos sabores.")
-                        return redirect('product_detail', product_id=product.id)
+    except (ValueError, Product.DoesNotExist, PizzaBorder.DoesNotExist,
+            PizzaFlavor.DoesNotExist, Option.DoesNotExist, Combo.DoesNotExist) as e:
+        return redirect_back_with_error(request, str(e))
 
-                current_item_price = product.price * quantity
+    except Exception as e:
+        return redirect_back_with_error(request, f"Ocorreu um erro ao adicionar o item: {e}")
 
-                pizza_border = None
-                if pizza_border_id:
-                    pizza_border = get_object_or_404(PizzaBorder, id=pizza_border_id)
-                    current_item_price += pizza_border.price * quantity
+def handle_product_addition(request, order, product_id, quantity, observation):
+    product = get_object_or_404(Product, id=product_id, active=True)
+    active_promotion = product.get_active_promotion()
 
-                total_flavors_price = 0
-                selected_flavors = []
-                if pizza_flavor_ids:
-                    for flavor_id in pizza_flavor_ids:
-                        flavor = get_object_or_404(PizzaFlavor, id=flavor_id)
-                        selected_flavors.append(flavor)
-                        # A divisão por seção ocorre aqui no cálculo do preço do item
-                        total_flavors_price += (flavor.price / number_of_flavor_sections) * quantity
-                current_item_price += total_flavors_price
+    pizza_border_id = request.POST.get('pizza_border_id')
+    pizza_flavor_ids = request.POST.getlist('pizza_flavor_ids')
+    number_of_flavor_sections = int(request.POST.get('number_of_flavor_sections', 1))
 
-                selected_options = []
-                for option_id in option_ids:
-                    option = get_object_or_404(Option, id=option_id)
-                    selected_options.append(option)
-                    current_item_price += option.price * quantity
+    # Validação de sabores
+    if product.max_flavor_sections:
+        if number_of_flavor_sections <= 0 or number_of_flavor_sections > product.max_flavor_sections:
+            return redirect_back_with_error(request, f"Número de seções de sabor inválido. Máximo: {product.max_flavor_sections}.")
+        if len(pizza_flavor_ids) > number_of_flavor_sections:
+            return redirect_back_with_error(request, f"Você selecionou mais sabores ({len(pizza_flavor_ids)}) do que o permitido ({number_of_flavor_sections}).")
+        if product.max_flavor_sections > 1 and number_of_flavor_sections > 1 and not pizza_flavor_ids:
+            return redirect_back_with_error(request, "Você deve selecionar ao menos um sabor.")
 
-                # NOVO: Aplicar desconto da promoção ao preço do item (apenas porcentagem)
-                if active_promotion:
-                    # Como só há promoção por porcentagem agora
-                    discount_amount = current_item_price * (active_promotion.discount_value / 100)
-                    current_item_price -= discount_amount
-                
-                order_item = OrderItem.objects.create(
-                    order=order,
-                    product=product,
-                    quantity=quantity,
-                    price=current_item_price,
-                    pizza_border=pizza_border,
-                    applied_promotion=active_promotion, # Salvar a promoção aplicada
-                    observation=observation
-                )
+    current_item_price = product.price * quantity
 
-                order_item.pizza_flavors.set(selected_flavors)
-                order_item.options.set(selected_options)
+    # Borda
+    pizza_border = None
+    if pizza_border_id:
+        pizza_border = get_object_or_404(PizzaBorder, id=pizza_border_id)
+        current_item_price += pizza_border.price * quantity
 
-                # 🔧 Atualiza o total do pedido após adicionar item
-                order.total = sum(item.price for item in order.items.all())
-                order.save()
+    # Sabores
+    selected_flavors = []
+    for flavor_id in pizza_flavor_ids:
+        flavor = get_object_or_404(PizzaFlavor, id=flavor_id)
+        selected_flavors.append(flavor)
+        current_item_price += (flavor.price / number_of_flavor_sections) * quantity
 
-                messages.success(request, f"'{product.name}' adicionado ao carrinho com sucesso!")
-                return redirect('product_detail', product_id=product.id)
+    # Opções adicionais
+    selected_options = []
+    for key in request.POST:
+        if key.startswith('option_type_'):
+            option_id = request.POST.get(key)
+            if option_id:
+                option = get_object_or_404(Option, id=option_id)
+                selected_options.append(option)
+                current_item_price += option.price * quantity
 
-            elif item_type == 'combo':
-                combo = get_object_or_404(Combo, id=item_id, active=True)
-                product = None # Garante que product é None para combos
+    # Promoção
+    if active_promotion:
+        discount = current_item_price * (active_promotion.discount_value / 100)
+        current_item_price -= discount
 
-                # Calcular o preço do combo com base nos seus itens e desconto
-                final_combo_price_per_unit = combo.price 
-                
-                current_item_price = final_combo_price_per_unit * quantity
+    order_item = OrderItem.objects.create(
+        order=order,
+        product=product,
+        quantity=quantity,
+        price=current_item_price,
+        pizza_border=pizza_border,
+        applied_promotion=active_promotion,
+        observation=observation
+    )
+    order_item.pizza_flavors.set(selected_flavors)
+    order_item.options.set(selected_options)
 
-                order_item = OrderItem.objects.create(
-                    order=order,
-                    combo=combo, 
-                    quantity=quantity,
-                    price=current_item_price,
-                    pizza_border=None,
-                    applied_promotion=None, # Promoções de produto não se aplicam a combos aqui
-                    observation=observation
-                )
+    update_order_total(order)
+    messages.success(request, f"'{product.name}' adicionado ao carrinho com sucesso!")
+    return redirect('home')
 
-                # 🔧 Atualiza o total do pedido após adicionar combo
-                order.total = sum(item.price for item in order.items.all())
-                order.save()
-                messages.success(request, f"Combo '{combo.name}' adicionado ao carrinho com sucesso!")
-                return redirect('combo_detail', combo_id=combo.id) 
+def handle_combo_addition(request, order, combo_id, quantity, observation):
+    combo = get_object_or_404(Combo, id=combo_id, active=True)
+    current_item_price = combo.price * quantity
 
-            else:
-                messages.error(request, "Tipo de item inválido.")
-                return redirect('product_list')
+    OrderItem.objects.create(
+        order=order,
+        combo=combo,
+        quantity=quantity,
+        price=current_item_price,
+        pizza_border=None,
+        applied_promotion=None,
+        observation=observation
+    )
 
-        except ValueError:
-            messages.error(request, "Dados de entrada inválidos (quantidade, borda, sabor ou opção).")
-            if item_type == 'product':
-                return redirect('product_detail', product_id=item_id)
-            elif item_type == 'combo':
-                return redirect('combo_detail', combo_id=item_id)
-            return redirect('product_list')
-        except Product.DoesNotExist:
-            messages.error(request, "Produto não encontrado ou inativo.")
-            return redirect('product_list') 
-        except PizzaBorder.DoesNotExist:
-            messages.error(request, "Borda de pizza não encontrada.")
-            return redirect('product_detail', product_id=item_id)
-        except PizzaFlavor.DoesNotExist:
-            messages.error(request, "Sabor de pizza não encontrado.")
-            return redirect('product_detail', product_id=item_id)
-        except Option.DoesNotExist:
-            messages.error(request, "Opção não encontrada.")
-            return redirect('product_detail', product_id=item_id)
-        except Combo.DoesNotExist:
-            messages.error(request, "Combo não encontrado ou inativo.")
-            return redirect('product_list')
-        except Exception as e:
-            messages.error(request, f"Ocorreu um erro ao adicionar o item: {e}")
-            if item_type == 'product':
-                return redirect('product_detail', product_id=item_id)
-            elif item_type == 'combo':
-                return redirect('combo_detail', combo_id=item_id)
-            return redirect('product_list')
-    
-    messages.error(request, "Método não permitido para adicionar item. Use POST.")
-    return redirect('product_list')
+    update_order_total(order)
+    messages.success(request, f"Combo '{combo.name}' adicionado ao carrinho com sucesso!")
+    return redirect('home')
 
 
 

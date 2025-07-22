@@ -243,11 +243,13 @@
 
 
     <main class="main">
-        <div id="content" class="container mt-5">
-            {% block content %}
-            {# Conteúdo específico da página será inserido aqui #}
-            {% endblock %}
-        </div>
+
+    <!-- Conteúdo da página centralizado -->
+    <div id="content">
+        {% block content %}
+        {# Conteúdo específico da página será inserido aqui #}
+        {% endblock %}
+    </div>
     </main>
 
     <footer id="footer" class="footer dark-background">
@@ -420,22 +422,19 @@
             </div>
 
             <div class="actions">
-                {% if order.status == 'pending' %}
-                    <form method="post" action="{% url 'complete_order' order.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger"
-                            {% if order.items.count < 1 %} disabled {% endif %}>
-                            Finalizar Pedido
-                        </button>
-                    </form>
-                    <form method="post" action="{% url 'cancel_order' order.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-danger"
-                            {% if order.items.count < 1 %} disabled {% endif %}>
-                            Cancelar Pedido
-                        </button>
-                    </form>
-                {% endif %}
+                {# Movido para fora do bloco {% if order.status == 'pending' %} para serem sempre renderizados #}
+                <form method="post" action="{% if order %}{% url 'complete_order' order.id %}{% endif %}" id="completeOrderForm">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" id="finalizarPedidoBtn">
+                        Finalizar Pedido
+                    </button>
+                </form>
+                <form method="post" action="{% if order %}{% url 'cancel_order' order.id %}{% endif %}" id="cancelOrderForm">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger" id="cancelarPedidoBtn">
+                        Cancelar Pedido
+                    </button>
+                </form>
                 <a href="{% url 'order_history' %}" class="btn btn-outline-danger">Ver Histórico</a>
             </div>
         </div>
@@ -459,6 +458,8 @@
             const cartSubtotal = document.getElementById('cartSubtotal'); // Do header
             const cartSubtotalOffcanvas = document.getElementById('cartSubtotalOffcanvas'); // Do offcanvas
             const cartTotal = document.getElementById('cartTotal'); // Do offcanvas
+            const finalizarBtn = document.getElementById('finalizarPedidoBtn'); // Referência pelo ID
+            const cancelarBtn = document.getElementById('cancelarPedidoBtn'); // Referência pelo ID
 
             // Função para buscar dados do perfil
             function fetchUserProfile() {
@@ -489,18 +490,39 @@
                 `;
             }
 
-            // Função para atualizar os totais do carrinho (se necessário via JS)
-            function updateCartTotals(orderData) {
+            // Função para atualizar os totais do carrinho e o estado dos botões
+            function updateCartAndButtons(orderData) {
+                let currentItemCount = 0;
+                let currentOrderTotal = 0;
+
                 if (orderData) {
-                    cartItemCount.textContent = orderData.item_count || 0;
-                    cartSubtotal.textContent = `R$ ${orderData.total.toFixed(2)}`;
-                    cartSubtotalOffcanvas.textContent = `R$ ${orderData.total.toFixed(2)}`;
-                    cartTotal.textContent = `R$ ${orderData.total.toFixed(2)}`;
-                } else {
-                    cartItemCount.textContent = '0';
-                    cartSubtotal.textContent = 'R$ 0,00';
-                    cartSubtotalOffcanvas.textContent = 'R$ 0,00';
-                    cartTotal.textContent = 'R$ 0,00';
+                    currentItemCount = orderData.item_count || 0;
+                    currentOrderTotal = orderData.total || 0;
+                }
+
+                cartItemCount.textContent = currentItemCount;
+                cartSubtotal.textContent = `R$ ${currentOrderTotal.toFixed(2)}`;
+                cartSubtotalOffcanvas.textContent = `R$ ${currentOrderTotal.toFixed(2)}`;
+                cartTotal.textContent = `R$ ${currentOrderTotal.toFixed(2)}`;
+
+                // Habilita/desabilita botões com base na contagem de itens
+                if (finalizarBtn) {
+                    if (currentItemCount < 1) {
+                        finalizarBtn.setAttribute('disabled', true);
+                        console.log('Botão Finalizar Pedido DESABILITADO. item_count:', currentItemCount);
+                    } else {
+                        finalizarBtn.removeAttribute('disabled');
+                        console.log('Botão Finalizar Pedido HABILITADO. item_count:', currentItemCount);
+                    }
+                }
+                if (cancelarBtn) {
+                    if (currentItemCount < 1) {
+                        cancelarBtn.setAttribute('disabled', true);
+                        console.log('Botão Cancelar Pedido DESABILITADO. item_count:', currentItemCount);
+                    } else {
+                        cancelarBtn.removeAttribute('disabled');
+                        console.log('Botão Cancelar Pedido HABILITADO. item_count:', currentItemCount);
+                    }
                 }
             }
 
@@ -516,8 +538,6 @@
                 // Exemplo: fetchOrderItems();
             });
             
-            
-
             // Lógica para o botão de deletar item (exemplo)
             document.querySelectorAll('.delete-btn').forEach(button => {
                 button.addEventListener('click', function(event) {
@@ -536,9 +556,10 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Dados recebidos do servidor após remover item:', data); // DEBUG
                         if (data.success) {
                             showCartMessage(data.message, 'success');
-                            updateCartTotals({
+                            updateCartAndButtons({ // Chamada para a nova função
                                 item_count: data.item_count,
                                 total: data.order_total
                             });
@@ -554,37 +575,28 @@
                                 `;
                             }
 
-                            // Atualiza o contador do carrinho
+                            // Atualiza o contador do carrinho (já feito em updateCartAndButtons, mas mantido para clareza)
                             document.getElementById('cartItemCount').textContent = data.item_count;
 
-                            // Bloqueia botão de Finalizar Pedido se carrinho estiver vazio
-                            const finalizarBtn = document.querySelector('form[action*="complete_order"] button[type="submit"]');
-                            if (finalizarBtn) {
-                                if (data.item_count < 1) {
-                                    finalizarBtn.setAttribute('disabled', true);
-                                } else {
-                                    finalizarBtn.removeAttribute('disabled');
-                                }
-                            }
                         } else {
                             showCartMessage(data.message || 'Erro ao remover item.', 'danger');
                         }
                     })
                     .catch(error => {
-                        console.error('Erro:', error);
+                        console.error('Erro na requisição Fetch:', error); // DEBUG
                         showCartMessage('Erro ao remover item.', 'danger');
                     });
                 });
             });
 
-            // Inicialização dos totais (se a página já carrega com o 'order' no contexto)
+            // Inicialização dos totais e estado dos botões ao carregar a página
             {% if order %}
-                updateCartTotals({
+                updateCartAndButtons({
                     item_count: {{ order.items.count }},
                     total: {{ order.total|floatformat:2 }}
                 });
             {% else %}
-                updateCartTotals(null);
+                updateCartAndButtons(null); // Passa null se não houver pedido
             {% endif %}
 
         });

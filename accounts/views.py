@@ -45,7 +45,7 @@ def register_or_login(request):
                 Profile.objects.create(user=user, phone_number=phone_number)
                 login(request, user)
                 messages.success(request, f"Conta criada e login realizado com sucesso, {user.username}!")
-                return render(request, 'core/base.html')
+                return render(request, 'core/home.html')
             except Exception as e:
                 # Captura qualquer outro erro durante a criação (ex: validação de modelo)
                 messages.error(request, f"Ocorreu um erro ao criar sua conta: {e}")
